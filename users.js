@@ -9,7 +9,7 @@ const addUser = ({ id, nick }) => {
 
     // if something exists in the existingUsers variable return that string
     if (existingUser) {
-        return { error: 'That nick has been taken!' };
+        return { error: `The nick ${nick} has been taken!` };
     }
 
     // create a user object to push to the users array, using ES6 syntax since the key and value are the same

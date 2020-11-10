@@ -14,20 +14,20 @@ const { addUser, getUser, removeUser, getUsersInChat } = require('./users');
 io.on( 'connection', (socket) => {
     socket.on('signin', ( { nick }, callback ) => {
         const { error, user } = addUser({ id: socket.id, nick });
-        console.log('New user', user.nick )
 
         if (error) {
             return callback(error);
+        } else if (user) {
+            console.log('New user', user.nick )
+            // send custom message when user joins to the user
+            socket.emit( 'sendMsgFromServer', { user: 'admin-pelz', msg: `${user.nick} welcome to the PelzChat :D` });
+
+            // send custom message when new user joins to others
+            socket.broadcast.emit( 'sendMsgFromServer', { user: 'admin-pelz', msg: `${user.nick} has joined the party B-)`} );
+
+            // send all the users that has joined the chat to the frontend
+            io.emit( 'usersData', { users: getUsersInChat() } );
         }
-
-        // send custom message when user joins to the user
-        socket.emit( 'sendMsgFromServer', { user: 'admin-pelz', msg: `${user.nick} welcome to the PelzChat :D` });
-
-        // send custom message when new user joins to others
-        socket.broadcast.emit( 'sendMsgFromServer', { user: 'admin-pelz', msg: `${user.nick} has joined the party B-)`} );
-
-        // send all the users that has joined the chat to the frontend
-        io.emit( 'usersData', { users: getUsersInChat() } );
 
         callback();
     });
@@ -67,8 +67,9 @@ io.on( 'connection', (socket) => {
 });
 
 const router = require('./router');
+const { use } = require('./router');
 
 app.use(router);
 app.use(cors());
 
-server.listen( PORT, () => console.log(`Server has started at port ${PORT}`) );
+server.listen( PORT, () => console.log(`My First Real Server With node.js has started at port ${PORT}. This is so cool...even though bugs nearly finished me`) );
